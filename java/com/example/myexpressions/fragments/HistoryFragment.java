@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,14 +45,24 @@ public class HistoryFragment extends Fragment {
     }
 
     public void setHistory() {
-        Map<String, String> historyList =  databaseBoss.fetchData();
-        Iterator iterator = historyList.keySet().iterator();
-        String result = "";
-        while(iterator.hasNext()) {
-            String key = (String) iterator.next();
-            String value = (String) historyList.get(key);
-            result += " "+key + " = " + value.trim() + "\n";
-        }
-        history.setText(result);
+        new Thread(() -> {
+            Map<String, String> historyList =  databaseBoss.fetchData();
+            Iterator iterator = historyList.keySet().iterator();
+            String result = "";
+            while(iterator.hasNext()) {
+                String key = (String) iterator.next();
+                String value = (String) historyList.get(key);
+                result += " "+key + " = " + value.trim() + "\n";
+            }
+            String finalResult = result;
+            getActivity().runOnUiThread(()-> {
+                if (finalResult.isEmpty()) {
+                    history.setText(" Empty History");
+                } else {
+                    history.setText(finalResult);
+                }
+            });
+        }).start();
+        history.setText(" Empty History");
     }
 }
