@@ -63,6 +63,5 @@ public class HistoryFragment extends Fragment {
                 }
             });
         }).start();
-        history.setText(" Empty History");
     }
 }
